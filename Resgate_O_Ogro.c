@@ -120,18 +120,19 @@ typedef struct
 
 typedef struct
 {
-    JOGADOR jogador;
-    CHAVE listaChaves[NUM_CHAVE];
-    GUARDA listaGuardas[NUM_GUARDA];
-    COORDENADA paredes[TAM_PAREDE];
-    COORDENADA torre[TAM_TORRE];
-    COORDENADA ogro;
-    TEMPO relogio;
-    int num_chaves;
-    int num_guardas;
-    int num_paredes;
-    int nivel;
-} JOGO;
+    // cores
+    int cor_jogador;
+    int cor_moldura;
+    int cor_parede;
+    int cor_chave;
+    int cor_guardas;
+    int cor_torre;
+    int cor_ogro;
+    int cor_cenario;
+
+    // efeitos
+    int efeitosGraficos;
+} CONFIGURACOES;
 
 typedef struct
 {
@@ -148,247 +149,94 @@ typedef struct
     TEMPO mais_lento;
 } ESTATISTICAS;
 
-
-/*
-A variável erro serve para identificar erros ocorridos nos processos de leitura e escrita
-nos arquivos binários, sendo 0 o número para representar não haver nenhum erro, 1 para
-erros na escrita e 2, erros na leitura e 3, para abertura.
-*/
-
-// Variáveis globais
-ESTATISTICAS estatisticas;
-/*Estou criando essa variável global apenas porque é uma variável que será utilizada em pouquíssimas funções, mas se fosse transformada em uma variável
-local, ela teria de ser colocada em diversas funções diferentes por conta da função Menu, que precisaria dela e é chamada em praticamente todas funções
-A fim de evitar uma desnecessária sujeira do código com uma variável em várias funções em que não teria a menor utilidade, deixei ela como global */
-
-int cor_jogador = BLUE;
-int cor_moldura = LIGHTGREEN;
-int cor_parede = LIGHTGRAY;
-int cor_chave = YELLOW;
-int cor_guardas = WHITE;
-int cor_torre = DARKGRAY;
-int cor_ogro = GREEN;
-int cor_cenario = BLACK;
-
-int efeitosGraficos = 1;
+typedef struct
+{
+    JOGADOR jogador;
+    CHAVE listaChaves[NUM_CHAVE];
+    GUARDA listaGuardas[NUM_GUARDA];
+    COORDENADA paredes[TAM_PAREDE];
+    COORDENADA torre[TAM_TORRE];
+    COORDENADA ogro;
+    TEMPO relogio;
+    int num_chaves;
+    int num_guardas;
+    int num_paredes;
+    int nivel;
+    CONFIGURACOES configuracoes;
+    ESTATISTICAS estatisticas;
+} JOGO;
 
 //funções
 void Moldura();
-/*
-    Parâmetro(s) de entrada: Nenhum.
-    Parâmetro(s) de saída: Nenhum.
-
-    Essa função cria a moldura que será os limites de espaço para dentro do jogo.
-    Ela usa as contantes definidas aqui (LARGURA, ALTURA, LINHA1 e COLUNA1) para criar esses limites.
-    A moldura nada mais é que um espaço cuja cor de fundo é a definida pela constante COR_MOLDURA e que é impedida
-    de ser atravessada pelo jogador por um "if" que o impede de chegar naquele lugar.
-*/
+// A função Moldura cria nas coordenadas especificadas pelo enunciado do trabalho uma moldura que serve como limite para a movimentação
+// do personagem durante o jogo.
 
 void TelaInicial();
-/*
-    Parâmetro(s) de entrada: Nenhum.
-    Parâmetro(s) de saída: Nenhum.
-
-    Conforme os termos do enunciado do trabalho, a tela inicial do jogo deve mostrar o nome dos desenvolvedores do jogo, nesse
-    caso, Lucas Cardoso dos Santos e Paulo Gamarra Lessa Pinto, junto com o nome da disciplina e do semestre. Em nosso caso,
-    Algoritmos e Programação e 2018/1, respectivamente.
-    A inspiração para essa tela vem para ser com estilo de videogame, com uma moldura de caracters ascii e com as informações
-    pedidas pelo trabalho.
-*/
+// Essa função coloca na tela os escritos "Resgate o Ogro!" em ASCII art, assim como um pequeno quadro com as informações ténnicas
+// e autorais sobre o jogo.
 
 void PegaNome(JOGADOR *jogador);
-/*
-    Parâmetro(s) de entrada: Elemento ponteiro jogador do tipo estrutura JOGADOR.
-    Parâmetro(s) de saída: Nenhum.
-
-    A função imprime na tela uma mensagem pedindo pelo nome do usuário.
-    Com o nome, será possível carregar algum arquivo binário salvo com um estado pausado do jogo.
-    Usando a biblioteca "stdlib", a função salva o nome dentro da estrutura do jogador.
-*/
+// Essa função atribui a estrutura Jogador um nome digitado pelo jogador.
 
 void IniciaJogo(JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída: Nenhum.
-    A função IniciaJogo é responsável pela coordenação das funções que irão atuar dentro do jogo em si.
-    Ela que irá executar o movimentod o personagem jogador, tal qual todos os testes necessários de colisão, de chave e de
-    guardas, assim como seus movimentos, além de todos os contadores necessários.
-    É uma espécie de main para o jogo em si.
-*/
 
 void MovimentaJogador(JOGO *jogo, char tecla);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
-void ApagaElemento(int x, int y);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void ApagaElemento (int x, int y, int cor_cenario);
 
 int TestaColisao(int x, int y, JOGO jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void TestaChave(JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 int PegaChave (JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
-void ApagaTorres(COORDENADA torre[]);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void ApagaTorres(COORDENADA torre[], int cor_cenario);
 
 int TestaGuarda (JOGADOR jogador, int num_guardas, GUARDA listaGuardas[]);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 int MataJogador(JOGO *jogo, int *encurralado);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void GeraParedes (COORDENADA paredes[], int num_paredes);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void GeraGuardas(JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void GeraJogador (JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void GeraChaves (JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void GeraTorre(JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
-void DesenhaJogador(JOGADOR jogador);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void DesenhaJogador(JOGADOR jogador, int cor_jogador);
 
-void DesenhaGuarda(GUARDA listaGuardas[], int num_guardas);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void DesenhaGuarda(GUARDA listaGuardas[], int num_guardas, int cor_guardas);
 
-void DesenhaParedes (COORDENADA paredes[], int num_paredes);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void DesenhaParedes (COORDENADA paredes[], int num_paredes, int cor_parede);
 
-void DesenhaTorre(COORDENADA torre[]);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void DesenhaTorre(COORDENADA torre[], CONFIGURACOES configuracoes);
 
-void DesenhaOgro(COORDENADA ogro);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void DesenhaOgro(COORDENADA ogro, int cor_ogro);
 
-void DesenhaChave (CHAVE chave);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void DesenhaChave (CHAVE chave, int cor_chave);
 
 void InicializaChaves (CHAVE listaChaves[], int num_chaves);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void InicializaJogo (int *num_paredes, int *num_chaves, int *num_guardas, int *nivel, COORDENADA listaParede[], CHAVE listaChave[], GUARDA listaGuardas[], JOGADOR *jogador, COORDENADA torre[], COORDENADA *ogro);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void InicializaJogador (JOGADOR *jogador);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void InicializaGuarda (GUARDA listaGuardas[], int num_guardas);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void EscolheDificuldade (int *num_paredes, int *num_chaves, int *num_guardas, int *nivel);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void TerminaJogo();
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void Menu(JOGO *jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
-void Legenda (JOGADOR jogador);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
+void Legenda (JOGADOR jogador, CONFIGURACOES configuracoes);
 
 void AreaDeInformacao (JOGO jogo);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 int GanhaJogo (JOGADOR jogador, COORDENADA ogro);
-/*
-    Parâmetro(s) de entrada:
-    Parâmetro(s) de saída:
-*/
 
 void DesenhaRanking(TEMPO relogio[], char nomes[TAM_RAN][TAM_NOME], int posicoes[], int quantObj[], char objeto[7]);
 
@@ -440,30 +288,45 @@ void Ranking(JOGO *jogo);
 
 int SalvaJogador(JOGO *jogo);
 
-void mostraEstatisticas (JOGO *jogo);
+void mostraEstatisticas (ESTATISTICAS estatisticas);
 
 void CriaEstatisticasJogador ();
 
-void SalvarEstatistica (char nome[]);
+void SalvarEstatistica (char nome[], ESTATISTICAS *estatisticas);
 
 void ConvertePontoEmTempo (int pontuacao, TEMPO *tempo);
 
 int ConverteTempoEmPonto(TEMPO tempo);
 
-void CarregaEstatisticas (char nome[]);
+void CarregaEstatisticas (char nome[], ESTATISTICAS *estatisticas);
 
-void AlteraEstatisticas (JOGO jogo);
+void AlteraEstatisticas (JOGO *jogo);
 
 int CriaMenuPersonalizado (char botoes[][16], int menorx, int menory, int quantidade_de_botoes, int quantidade_linhas, int quantidade_colunas);
 
 void Configuracoes(JOGO *jogo);
 
-void PintaCenario();
+void PintaCenario(JOGO jogo);
 
+void MudaCores(CONFIGURACOES *configuracoes);
+
+void Sangue (JOGO jogo);
+
+void AlteraEfeitosGraficos(JOGO *jogo);
 
 int main()
 {
     JOGO jogo;
+
+    jogo.configuracoes.cor_jogador = BLUE;
+    jogo.configuracoes.cor_moldura = LIGHTGREEN;
+    jogo.configuracoes.cor_parede = LIGHTGRAY;
+    jogo.configuracoes.cor_chave = YELLOW;
+    jogo.configuracoes.cor_guardas = WHITE;
+    jogo.configuracoes.cor_torre = DARKGRAY;
+    jogo.configuracoes.cor_ogro = GREEN;
+    jogo.configuracoes.cor_cenario = BLACK;
+    jogo.configuracoes.efeitosGraficos = 1;
     jogo.nivel = 0;
 
     TelaInicial();
@@ -483,7 +346,7 @@ void TelaInicial() // ok
 
     printf("\n");
 
-    /*Escrito com ascii art: Resgate o Ogro e colorido com as cores do jogador, da torre e do ogro*/
+    /* Escrito com ascii art: Resgate o Ogro e colorido com as cores do jogador, da torre e do ogro */
     printf("                                                                     __ \n");
     printf("           _____                 _                 _____            ");
     textbackground(GREEN);          printf("|  |\n");
@@ -564,23 +427,23 @@ void DesenhaJogo (JOGO jogo)
 {
     system("cls");
 
-    PintaCenario();
+    PintaCenario(jogo);
     Moldura();
     if (jogo.jogador.chaves < MIN_CHAVES)
     {
-        DesenhaTorre(jogo.torre);
+        DesenhaTorre(jogo.torre, jogo.configuracoes);
     }
-    DesenhaOgro(jogo.ogro);
-    DesenhaParedes(jogo.paredes, jogo.num_paredes);
-    DesenhaGuarda(jogo.listaGuardas, jogo.num_guardas);
-    DesenhaJogador(jogo.jogador);
+    DesenhaOgro(jogo.ogro, jogo.configuracoes.cor_ogro);
+    DesenhaParedes(jogo.paredes, jogo.num_paredes, jogo.configuracoes.cor_parede);
+    DesenhaGuarda(jogo.listaGuardas, jogo.num_guardas, jogo.configuracoes.cor_guardas);
+    DesenhaJogador(jogo.jogador, jogo.configuracoes.cor_jogador);
 }
 
-void PintaCenario ()
+void PintaCenario (JOGO jogo)
 {
     int x, y;
 
-    textbackground(cor_cenario);
+    textbackground(jogo.configuracoes.cor_cenario);
     for (x = 1; x <= LARGURA; x++)
     {
         for (y = 1; y <= ALTURA; y++)
@@ -628,46 +491,43 @@ void PegaNome(JOGADOR *jogador)
         }
     }
     while (laco);
-
-    CarregaEstatisticas(jogador->nome);
 }
 
-void CarregaEstatisticas (char nome[])
+void CarregaEstatisticas (char nome[], ESTATISTICAS *estatisticas)
 {
     ESTATISTICAS estatisticas_aux;
     FILE *arq_estatisticas;
     int achou = 0;
 
-    strcpy(estatisticas.nome, nome);
+    strcpy(estatisticas->nome, nome);
 
     arq_estatisticas = fopen("estatisticas.bin", "rb");
     if (arq_estatisticas == NULL)
     {
-      //  MessageBox(0, "Nao foi possivel abrir o arquivo binario em CarregaEstatisticas!", "Erro ao abrir!", MB_OK|MB_ICONEXCLAMATION);
         fclose(arq_estatisticas);
-        CriaEstatisticasJogador();
+        CriaEstatisticasJogador(estatisticas);
     }
     else
     {
         while (fread(&estatisticas_aux, sizeof(ESTATISTICAS), 1, arq_estatisticas))
         {
-            if (strcmp(estatisticas_aux.nome, estatisticas.nome) == 0)
+            if (strcmp(estatisticas_aux.nome, estatisticas->nome) == 0)
             {
-                estatisticas.partidas_jogadas = estatisticas_aux.partidas_jogadas;
-                estatisticas.chaves_pegas = estatisticas_aux.chaves_pegas;
-                estatisticas.erro = estatisticas_aux.erro;
-                estatisticas.mais_lento.centesimos = estatisticas_aux.mais_lento.centesimos;
-                estatisticas.mais_lento.segundos = estatisticas_aux.mais_lento.segundos;
-                estatisticas.mais_lento.minutos = estatisticas_aux.mais_lento.minutos;
-                estatisticas.mais_rapido.centesimos = estatisticas_aux.mais_rapido.centesimos;
-                estatisticas.mais_rapido.segundos = estatisticas_aux.mais_rapido.segundos;
-                estatisticas.mais_rapido.minutos = estatisticas_aux.mais_rapido.minutos;
-                estatisticas.tempo_medio.centesimos = estatisticas_aux.tempo_medio.centesimos;
-                estatisticas.tempo_medio.segundos = estatisticas_aux.tempo_medio.segundos;
-                estatisticas.tempo_medio.minutos = estatisticas_aux.tempo_medio.minutos;
-                estatisticas.partidas_faceis = estatisticas_aux.partidas_faceis;
-                estatisticas.partidas_dificeis = estatisticas_aux.partidas_dificeis;
-                estatisticas.vitorias = estatisticas_aux.vitorias;
+                estatisticas->partidas_jogadas = estatisticas_aux.partidas_jogadas;
+                estatisticas->chaves_pegas = estatisticas_aux.chaves_pegas;
+                estatisticas->erro = estatisticas_aux.erro;
+                estatisticas->mais_lento.centesimos = estatisticas_aux.mais_lento.centesimos;
+                estatisticas->mais_lento.segundos = estatisticas_aux.mais_lento.segundos;
+                estatisticas->mais_lento.minutos = estatisticas_aux.mais_lento.minutos;
+                estatisticas->mais_rapido.centesimos = estatisticas_aux.mais_rapido.centesimos;
+                estatisticas->mais_rapido.segundos = estatisticas_aux.mais_rapido.segundos;
+                estatisticas->mais_rapido.minutos = estatisticas_aux.mais_rapido.minutos;
+                estatisticas->tempo_medio.centesimos = estatisticas_aux.tempo_medio.centesimos;
+                estatisticas->tempo_medio.segundos = estatisticas_aux.tempo_medio.segundos;
+                estatisticas->tempo_medio.minutos = estatisticas_aux.tempo_medio.minutos;
+                estatisticas->partidas_faceis = estatisticas_aux.partidas_faceis;
+                estatisticas->partidas_dificeis = estatisticas_aux.partidas_dificeis;
+                estatisticas->vitorias = estatisticas_aux.vitorias;
 
                 achou = 1;
 
@@ -680,38 +540,38 @@ void CarregaEstatisticas (char nome[])
         if(!achou)
         {
             MessageBox(0, "Nao foi encontrado no arquivo um jogo salvo com seu nome para carregar!", "Erro ao achar!", MB_OK|MB_ICONEXCLAMATION);
-            CriaEstatisticasJogador();
+            CriaEstatisticasJogador(estatisticas);
         }
     }
 }
 
-void CriaEstatisticasJogador()
+void CriaEstatisticasJogador(ESTATISTICAS *estatisticas)
 {
     FILE *arq_estatisticas;
 
-    estatisticas.chaves_pegas = 0;
-    estatisticas.mais_lento.centesimos = 0;
-    estatisticas.mais_lento.segundos = 0;
-    estatisticas.mais_lento.minutos = 0;
-    estatisticas.mais_rapido.centesimos = 0;
-    estatisticas.mais_rapido.segundos = 0;
-    estatisticas.mais_rapido.minutos = 0;
-    estatisticas.partidas_dificeis = 0;
-    estatisticas.partidas_faceis = 0;
-    estatisticas.tempo_medio.centesimos = 0;
-    estatisticas.tempo_medio.segundos = 0;
-    estatisticas.tempo_medio.minutos = 0;
-    estatisticas.erro = 0;
-    estatisticas.mortes = 0;
-    estatisticas.partidas_jogadas = 0;
-    estatisticas.vitorias = 0;
+    estatisticas->chaves_pegas = 0;
+    estatisticas->mais_lento.centesimos = 0;
+    estatisticas->mais_lento.segundos = 0;
+    estatisticas->mais_lento.minutos = 0;
+    estatisticas->mais_rapido.centesimos = 0;
+    estatisticas->mais_rapido.segundos = 0;
+    estatisticas->mais_rapido.minutos = 0;
+    estatisticas->partidas_dificeis = 0;
+    estatisticas->partidas_faceis = 0;
+    estatisticas->tempo_medio.centesimos = 0;
+    estatisticas->tempo_medio.segundos = 0;
+    estatisticas->tempo_medio.minutos = 0;
+    estatisticas->erro = 0;
+    estatisticas->mortes = 0;
+    estatisticas->partidas_jogadas = 0;
+    estatisticas->vitorias = 0;
 
     arq_estatisticas = fopen("estatisticas.bin", "ab");
     if (arq_estatisticas == NULL)
     {
         fclose(arq_estatisticas);
         MessageBox(0, "Nao foi possivel abrir ou criar um arquivo binario!\nVerifique se voce tem permissao para tal.", "Erro ao abrir!", MB_OK|MB_ICONEXCLAMATION);
-        estatisticas.erro = 3;
+        estatisticas->erro = 3;
     }
     else
     {
@@ -722,16 +582,18 @@ void CriaEstatisticasJogador()
         else
         {
             MessageBox(0, "Nao foi possivel escrever no arquivo binario!\nCriaEstatisticaJogador", "Erro na escrita!", MB_OK|MB_ICONEXCLAMATION);
-            estatisticas.erro = 1;
+            estatisticas->erro = 1;
             fclose(arq_estatisticas);
         }
     }
 }
 
-void Menu(JOGO *jogo)
+void Menu (JOGO *jogo)
 {
     int quadro;
     char botoes[9][16];
+
+    CarregaEstatisticas(jogo->jogador.nome, &jogo->estatisticas);
 
     strcpy(botoes[0], "Novo jogo");
     strcpy(botoes[1], "Retornar o jogo");
@@ -764,7 +626,7 @@ void Menu(JOGO *jogo)
             SalvarPartida(jogo);
             break;
         case 5:
-            mostraEstatisticas(jogo);
+            mostraEstatisticas(jogo->estatisticas);
             break;
         case 6:
             MostraRanking(jogo);
@@ -774,43 +636,17 @@ void Menu(JOGO *jogo)
             break;
         case 8:
             Configuracoes(jogo);
-            Menu(jogo);
             break;
         case 9:
             Sair(jogo);
             break;
     }
 
-    getch();
+    Menu(jogo);
 }
 
 void DesenhaGuerreiro()
 {
-    /*
-                       _     _    _     _
-                  [_]___[_]__[_]___[_]
-                  [__#__][__I_]__I__#]
-                  [_I_#_I__#[__]__#__]
-                     [_]_#_]__I_#_]
-                     [I_|/ _W_ \|#]
-                     [#_||{(")}||_]
-                     [_I||{/~\}||_]
-                     [__]|/\_/\||#]
-                     [_I__I#___]__]
-                     [__I_#_I___#_]
-                     [#__I____]__I]
-      .-.            [__I_#__I__[_]
-    __|=|__          [_#_[__#_]__#]
-   (_/`-`\_)         [__#_I__[#_I_]
-   //\___/\\         [_I__]__#_I__]
-   <>/   \<>         [#__I__#_]__I]
-    \|_._|/          [_I#__I___I_#]    .:.
-     <_I_>           [#__I__]_#___]   -=o=-
-      |||            [_I__I#__]___]    ':'
-jgs  /_|_\         \\[__]#___][__#]//, \|/
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    */
-
     textbackground(LIGHTGRAY);
     textcolor(BLACK);
     gotoxy(52, 3);   printf("       _,.                  ");
@@ -861,7 +697,6 @@ void RetornarJogo(JOGO *jogo)
         printf("\n  Aperte qualquer botao para voltar ao Menu\n");
 
         getch();
-        Menu(jogo);
     }
     else
     {
@@ -871,7 +706,6 @@ void RetornarJogo(JOGO *jogo)
             printf(" Aperte qualquer tecla para voltar ao menu");
             getch();
             system("cls");
-            Menu(jogo);
         }
         else
         {
@@ -912,13 +746,9 @@ void Sair(JOGO *jogo)
 
     if (EscolheUmOuDois("Sim", "Nao", 5, 5))
     {
-        SalvarEstatistica(jogo->jogador.nome);
+        SalvarEstatistica(jogo->jogador.nome, &jogo->estatisticas);
         system("cls");
         exit(0);
-    }
-    else
-    {
-        Menu(jogo);
     }
 }
 
@@ -960,7 +790,6 @@ void SalvarPartida(JOGO *jogo)
                     printf("  Seu arquivo foi criado e o arquivo, salvo!\n");
                     printf("  Pressione qualquer tecla para voltar ao Menu!\n");
                     getch();
-                    Menu(jogo);
                 }
                 else
                 {
@@ -969,13 +798,11 @@ void SalvarPartida(JOGO *jogo)
                     printf("  Pressione qualquer tecla para retornar ao menu\n");
                     getch();
                     fclose(jogo_salvo);
-                    Menu(jogo);
                 }
             }
             else
             {
                 system("cls");
-                Menu(jogo);
             }
         }
         else
@@ -992,7 +819,6 @@ void SalvarPartida(JOGO *jogo)
                     {
                         MessageBox(0, "Uma quantidade diferente de 1 foi escrita no arquivo", "Um erro ocorreu na escrita!", MB_OK|MB_ICONEXCLAMATION);
                         fclose(jogo_salvo);
-                        Menu(jogo);
                     }
                     else
                     {
@@ -1017,12 +843,10 @@ void SalvarPartida(JOGO *jogo)
         printf("\n  Pressione qualquer tecla para voltar ao menu\n");
         getch();
         system("cls");
-        Menu(jogo);
     }
     else
     {
         system("cls");
-        Menu(jogo);
     }
 }
 
@@ -1041,7 +865,6 @@ void CarregarPartida(JOGO *jogo)
         MessageBox(0,"Sinto muito, mas nao foi encontrado nenhum jogo salvo!\nTente jogar algum jogo para poder carrega-lo!","Sem jogos salvos!",MB_OK|MB_ICONEXCLAMATION);
         printf(" Pressione qualquer tecla para voltar ao Menu\n");
         getch();
-        Menu(jogo);
     }
 
     while (fread(&jogoAux, sizeof(JOGO), 1, jogo_salvo))
@@ -1116,7 +939,6 @@ void CarregarPartida(JOGO *jogo)
         fclose(jogo_salvo);
         printf("Aperte qualquer botão para voltar ao Menu\n");
         getch();
-        Menu(jogo);
     }
 }
 
@@ -1168,8 +990,8 @@ void EscolherJogo(JOGO *jogo)
 			jogo->num_guardas = 2;
 			jogo->nivel = 1;
 
-            estatisticas.partidas_faceis++;
-            estatisticas.partidas_jogadas++;
+            jogo->estatisticas.partidas_faceis++;
+            jogo->estatisticas.partidas_jogadas++;
 
 			GeraJogoNovo(jogo);
 			DesenhaJogo(*jogo);
@@ -1181,8 +1003,8 @@ void EscolherJogo(JOGO *jogo)
             jogo->num_guardas = 5;
             jogo->nivel = 2;
 
-            estatisticas.partidas_dificeis++;
-            estatisticas.partidas_jogadas++;
+            jogo->estatisticas.partidas_dificeis++;
+            jogo->estatisticas.partidas_jogadas++;
             GeraJogoNovo(jogo);
 
             DesenhaJogo(*jogo);
@@ -1190,7 +1012,6 @@ void EscolherJogo(JOGO *jogo)
 			break;
         case 3:
             system("cls");
-            Menu(jogo);
             break;
     }
 }
@@ -1239,7 +1060,7 @@ void Ajuda(JOGO *jogo)
     printf("   Boa sorte!\"                                                                     \n");
     printf("\n\n");
 
-    Legenda(jogo->jogador);
+    Legenda(jogo->jogador, jogo->configuracoes);
 
     printf("\n\n");
     printf("   \"A moldura delimita a area em que voce pode andar.                           \n");
@@ -1259,7 +1080,6 @@ void Ajuda(JOGO *jogo)
     printf("   o ogro.\"                                                                     \n");
 
     getch();
-    Menu(jogo);
 }
 
 void Quadro (int corQuadro, int corDentro, int corTexto, int menorx, int maiorx, int menory, int maiory, char texto[16])
@@ -1304,11 +1124,11 @@ void Quadro (int corQuadro, int corDentro, int corTexto, int menorx, int maiorx,
     textbackground(BLACK);
 }
 
-void Moldura()
+void Moldura(CONFIGURACOES configuracoes)
 {
 	int linha, coluna;
 
-	textbackground(cor_moldura);
+	textbackground(configuracoes.cor_moldura);
 	for(linha = LINHA1; linha <= ALTURA; linha++)
 	{
         putchxy(COLUNA1, linha, ' ');
@@ -1355,11 +1175,11 @@ void GeraTorre(JOGO *jogo)
     GeraOgro(&jogo->ogro);
 }
 
-void DesenhaTorre(COORDENADA torre[])
+void DesenhaTorre(COORDENADA torre[], CONFIGURACOES configuracoes)
 {
     int i;
 
-    textbackground(cor_torre);
+    textbackground(configuracoes.cor_torre);
     for (i = 0; i < TAM_TORRE; i++)
     {
         putchxy(torre[i].x, torre[i].y, ' ');
@@ -1377,14 +1197,14 @@ void GeraOgro(COORDENADA *ogro)
     ogro->y = ((ALTURA / 2) + posicaoOgro);
 }
 
-void DesenhaOgro(COORDENADA ogro)
+void DesenhaOgro(COORDENADA ogro, int cor_ogro)
 {
     textbackground(cor_ogro);
     putchxy(ogro.x, ogro.y, 'O');
     textbackground(BLACK);
 }
 
-void DesenhaParedes (COORDENADA paredes[], int num_paredes)
+void DesenhaParedes (COORDENADA paredes[], int num_paredes, int cor_parede)
 {
     int i;
 
@@ -1489,7 +1309,7 @@ void InicializaChaves (CHAVE listaChaves[], int num_chaves)
     }
 }
 
-void DesenhaChave (CHAVE chave)
+void DesenhaChave (CHAVE chave, int cor_chave)
 {
     textbackground(cor_chave);
     textcolor(BLACK);
@@ -1547,7 +1367,7 @@ void IniciaJogo(JOGO *jogo)
         {
             inicio_C = clock() / 1000;
             gotoxy(25, (ALTURA + 4));
-            textbackground(cor_chave);
+            textbackground(jogo->configuracoes.cor_chave);
             textcolor(BLACK);
             printf("VOCE PEGOU UMA CHAVE!");
             textbackground(BLACK);
@@ -1574,7 +1394,7 @@ void IniciaJogo(JOGO *jogo)
 	}
     while(tecla != ESC && jogo->jogador.vida > 0 && !ganhou && !encurralado);
 
-    SalvarEstatistica(jogo->jogador.nome);
+    SalvarEstatistica(jogo->jogador.nome, &jogo->estatisticas);
 
     if (jogo->jogador.vida <= 0)
     {
@@ -1594,7 +1414,6 @@ void IniciaJogo(JOGO *jogo)
         Sleep(1000);
         fflush(stdin);
         getch();
-        Menu(jogo);
     }
 
     if (encurralado)
@@ -1615,7 +1434,6 @@ void IniciaJogo(JOGO *jogo)
         Sleep(1000);
         fflush(stdin);
         getch();
-        Menu(jogo);
     }
 
     if (tecla == ESC)
@@ -1625,7 +1443,6 @@ void IniciaJogo(JOGO *jogo)
         printf("Pressione ENTER para voltar ao menu\n");
 
         getch();
-        Menu(jogo);
     }
     if (ganhou)
     {
@@ -1642,7 +1459,7 @@ void IniciaJogo(JOGO *jogo)
         printf("\n");
         printf("Aperte qualquer tecla para ir ao ranking!\n");
 
-        AlteraEstatisticas(*jogo);
+        AlteraEstatisticas(jogo);
 
         Sleep(1000);
         getch();
@@ -1651,47 +1468,47 @@ void IniciaJogo(JOGO *jogo)
     }
 }
 
-void AlteraEstatisticas (JOGO jogo)
+void AlteraEstatisticas (JOGO *jogo)
 {
     int tempo, tempoMedio, tempoRapido, tempoLento;
 
     /* Aumenta a quantidade de vitórias nas estatísticias */
-    estatisticas.vitorias++;
+    jogo->estatisticas.vitorias++;
 
     /* Cálculo dos tempos com base nesse último jogo */
-    tempo = ConverteTempoEmPonto(jogo.relogio); // Converte o tempo em centésimos de segundo para faciliar as operações
+    tempo = ConverteTempoEmPonto(jogo->relogio); // Converte o tempo em centésimos de segundo para faciliar as operações
 
     /* Calcula o tempo médio com base no novo tempo */
-    tempoMedio = ConverteTempoEmPonto(estatisticas.tempo_medio);
+    tempoMedio = ConverteTempoEmPonto(jogo->estatisticas.tempo_medio);
 
-    tempoMedio = (((tempoMedio * (estatisticas.vitorias - 1)) + tempo) / estatisticas.vitorias);
+    tempoMedio = (((tempoMedio * (jogo->estatisticas.vitorias - 1)) + tempo) / jogo->estatisticas.vitorias);
 
-    ConvertePontoEmTempo(tempoMedio, &estatisticas.tempo_medio);
+    ConvertePontoEmTempo(tempoMedio, &jogo->estatisticas.tempo_medio);
 
     /* Verifica se o tempo dessa partida é mais rápido ou mais lento */
-    tempoRapido = ConverteTempoEmPonto(estatisticas.mais_rapido);
-    tempoLento = ConverteTempoEmPonto(estatisticas.mais_lento);
+    tempoRapido = ConverteTempoEmPonto(jogo->estatisticas.mais_rapido);
+    tempoLento = ConverteTempoEmPonto(jogo->estatisticas.mais_lento);
 
     if (tempoRapido == 0)
     {
-        ConvertePontoEmTempo(tempo, &estatisticas.mais_rapido);
+        ConvertePontoEmTempo(tempo, &jogo->estatisticas.mais_rapido);
     }
     if (tempo < tempoRapido)
     {
-        ConvertePontoEmTempo (tempo, &estatisticas.mais_rapido);
+        ConvertePontoEmTempo (tempo, &jogo->estatisticas.mais_rapido);
     }
     else
     {
         if (tempo > tempoLento)
         {
-            ConvertePontoEmTempo (tempo, &estatisticas.mais_lento);
+            ConvertePontoEmTempo (tempo, &jogo->estatisticas.mais_lento);
         }
     }
 
-    SalvarEstatistica(jogo.jogador.nome);
+    SalvarEstatistica(jogo->jogador.nome, &jogo->estatisticas);
 }
 
-void SalvarEstatistica (char nome[])
+void SalvarEstatistica (char nome[], ESTATISTICAS *estatisticas)
 {
     FILE *arq_estatistica;
     ESTATISTICAS estatisticas_aux;
@@ -1708,7 +1525,7 @@ void SalvarEstatistica (char nome[])
 
         arq_estatistica = fopen("estatisticas.bin", "wb");
 
-        fwrite(&estatisticas, sizeof(ESTATISTICAS), 1, arq_estatistica);
+        fwrite(estatisticas, sizeof(ESTATISTICAS), 1, arq_estatistica);
 
         fclose(arq_estatistica);
     }
@@ -1719,13 +1536,13 @@ void SalvarEstatistica (char nome[])
             if (strcmp(estatisticas_aux.nome, nome) == 0)
             {
                 fseek(arq_estatistica, sizeof(ESTATISTICAS) * localizacaoAtual, SEEK_SET);
-                if(fwrite(&estatisticas, sizeof(ESTATISTICAS), 1, arq_estatistica))
+                if(fwrite(estatisticas, sizeof(ESTATISTICAS), 1, arq_estatistica))
                 {
                     salvo = 1;
                 }
                 else
                 {
-                    estatisticas.erro = 1;
+                    estatisticas->erro = 1;
                 }
                 fseek(arq_estatistica, 0, SEEK_END);
             }
@@ -1762,52 +1579,52 @@ int GanhaJogo (JOGADOR jogador, COORDENADA ogro)
     return(0);
 }
 
-void Legenda (JOGADOR jogador)
+void Legenda (JOGADOR jogador, CONFIGURACOES configuracoes)
 {
     printf("                           ||||||||||||||||||||||||||\n");
     printf("                           | Legenda:               |\n");
     printf("                           |                        |\n");
     printf("                           | ");
-    textbackground(cor_jogador);
+    textbackground(configuracoes.cor_jogador);
     printf("%c", jogador.ch);
     textbackground(BLACK);
     printf(": Jogador             |\n");
     printf("                           | ");
-    textbackground(cor_chave);
+    textbackground(configuracoes.cor_chave);
     textcolor(BLACK);
     printf("C");
     textcolor(WHITE);
     textbackground(BLACK);
     printf(": Chave               |\n");
     printf("                           | ");
-    textbackground(cor_guardas);
+    textbackground(configuracoes.cor_guardas);
     textcolor(BLACK);
     printf("G");
     textcolor(WHITE);
     textbackground(BLACK);
     printf(": Guarda              |\n");
     printf("                           | ");
-    textbackground(cor_parede);
+    textbackground(configuracoes.cor_parede);
     printf(" ");
     textbackground(BLACK);
     printf(": Parede              |\n");
     printf("                           | ");
-    textbackground(cor_torre);
+    textbackground(configuracoes.cor_torre);
     printf(" ");
     textbackground(BLACK);
     printf(": Torre do Ogro       |\n");
     printf("                           | ");
-    textbackground(cor_ogro);
+    textbackground(configuracoes.cor_ogro);
     printf("O");
     textbackground(BLACK);
     printf(": Ogro                |\n");
     printf("                           | ");
-    textbackground(cor_moldura);
+    textbackground(configuracoes.cor_moldura);
     printf(" ");
     textbackground(BLACK);
     printf(": Moldura             |\n");
     printf("                           | ");
-    textbackground(cor_cenario);
+    textbackground(configuracoes.cor_cenario);
     printf(" ");
     textbackground(BLACK);
     printf(": Cenario             |\n");
@@ -1857,13 +1674,13 @@ int TestaColisao(int x, int y, JOGO jogo)
     return(colisao);
 }
 
-void ApagaTorres(COORDENADA torre[])
+void ApagaTorres(COORDENADA torre[], int cor_cenario)
 {
     int i;
 
     for (i = 0; i < TAM_TORRE; i++)
     {
-        ApagaElemento(torre[i].x, torre[i].y);
+        ApagaElemento(torre[i].x, torre[i].y, cor_cenario);
     }
 }
 
@@ -1873,7 +1690,7 @@ void MovimentaJogador(JOGO *jogo, char tecla)
     if(tecla == SETAS)
    	{
         tecla = getch();
-        ApagaElemento(jogo->jogador.posicao.x, jogo->jogador.posicao.y);
+        ApagaElemento(jogo->jogador.posicao.x, jogo->jogador.posicao.y, jogo->configuracoes.cor_cenario);
         switch(tecla)
         {
             case CIMA:
@@ -1893,7 +1710,7 @@ void MovimentaJogador(JOGO *jogo, char tecla)
                     (jogo->jogador.posicao.x)--;
                 break;
         }
-        DesenhaJogador(jogo->jogador);
+        DesenhaJogador(jogo->jogador, jogo->configuracoes.cor_jogador);
     }
 }
 
@@ -1950,7 +1767,7 @@ void MoveGuarda(JOGO *jogo)
             else
             {
                 invalido = 0;
-                ApagaElemento(jogo->listaGuardas[g].posicao.x, jogo->listaGuardas[g].posicao.y);
+                ApagaElemento(jogo->listaGuardas[g].posicao.x, jogo->listaGuardas[g].posicao.y, jogo->configuracoes.cor_cenario);
                 jogo->listaGuardas[g].posicao.x = jogo->listaGuardas[g].destino.x;
                 jogo->listaGuardas[g].posicao.y = jogo->listaGuardas[g].destino.y;
                 jogo->listaGuardas[g].passos--;
@@ -1963,7 +1780,7 @@ void MoveGuarda(JOGO *jogo)
         }
     }
 
-    DesenhaGuarda(jogo->listaGuardas, jogo->num_guardas);
+    DesenhaGuarda(jogo->listaGuardas, jogo->num_guardas, jogo->configuracoes.cor_guardas);
 
     /*
     0 - para diagonal inferior esquerda
@@ -2002,7 +1819,7 @@ void TestaChave(JOGO *jogo)
                     {
                         if (jogo->listaChaves[i].status == 1)
                         {
-                            DesenhaChave(jogo->listaChaves[i]);
+                            DesenhaChave(jogo->listaChaves[i], jogo->configuracoes.cor_chave);
                             jogo->listaChaves[i].status = 2;
                         }
                     }
@@ -2029,13 +1846,13 @@ int PegaChave (JOGO *jogo)
                     jogo->listaChaves[i].status = 3;
                     AtualizaChaves(jogo->jogador);
 
-                    estatisticas.chaves_pegas++;
+                    jogo->estatisticas.chaves_pegas++;
 
                     chavePega = 1;
 
                     if (jogo->jogador.chaves >= MIN_CHAVES)
                     {
-                        ApagaTorres(jogo->torre);
+                        ApagaTorres(jogo->torre, jogo->configuracoes.cor_cenario);
                     }
                 }
             }
@@ -2090,7 +1907,7 @@ int MataJogador(JOGO *jogo, int *encurralado)
     if (TestaGuarda(jogo->jogador, jogo->num_guardas, jogo->listaGuardas))
     {
         jogo->jogador.vida--;
-        estatisticas.mortes++;
+        jogo->estatisticas.mortes++;
         vidaPerdida = 1;
         AtualizaVidas(jogo->jogador);
 
@@ -2108,7 +1925,7 @@ int MataJogador(JOGO *jogo, int *encurralado)
             textbackground(BLACK);
             textcolor(WHITE);
 
-            if (efeitosGraficos)
+            if (jogo->configuracoes.efeitosGraficos)
             {
                 Sangue(*jogo);
             }
@@ -2149,7 +1966,7 @@ void GeraGuardas(JOGO *jogo)
     InicializaGuarda(jogo->listaGuardas, jogo->num_guardas);
 }
 
-void DesenhaGuarda(GUARDA listaGuardas[], int num_guardas)
+void DesenhaGuarda(GUARDA listaGuardas[], int num_guardas, int cor_guardas)
 {
     int i;
 
@@ -2227,7 +2044,7 @@ int SalvaJogador(JOGO *jogo)
         }
         else
         {
-            ApagaElemento(jogo->jogador.posicao.x, jogo->jogador.posicao.y);
+            ApagaElemento(jogo->jogador.posicao.x, jogo->jogador.posicao.y, jogo->configuracoes.cor_cenario);
             jogo->jogador.posicao.x = destino.x;
             jogo->jogador.posicao.y = destino.y;
 
@@ -2237,7 +2054,7 @@ int SalvaJogador(JOGO *jogo)
             }
             else
             {
-                DesenhaJogador(jogo->jogador);
+                DesenhaJogador(jogo->jogador, jogo->configuracoes.cor_jogador);
             }
         }
     }
@@ -2277,20 +2094,20 @@ void InicializaJogador (JOGADOR *jogador)
     jogador->vida = 3;
 }
 
-void DesenhaJogador(JOGADOR jogador)
+void DesenhaJogador (JOGADOR jogador, int cor_jogador)
 {
     textbackground(cor_jogador);
     putchxy(jogador.posicao.x, jogador.posicao.y, jogador.ch);
     textbackground(BLACK);
 }
 
-void ApagaElemento(int x, int y)
+void ApagaElemento (int x, int y, int cor_cenario)
 {
     textbackground(cor_cenario);
     putchxy(x, y, ' ');
 }
 
-void Ranking(JOGO *jogo)
+void Ranking (JOGO *jogo)
 {
     FILE *ranking;
     int i;
@@ -2337,12 +2154,6 @@ void Ranking(JOGO *jogo)
                 fclose(ranking);
 
                 DesenhaRanking(pontuacao, nome, posicoes, quantObj, "chaves");
-
-                Menu(jogo);
-            }
-            else
-            {
-                Menu(jogo);
             }
         }
         else
@@ -2368,7 +2179,6 @@ void Ranking(JOGO *jogo)
             DesenhaRanking(pontuacao, nome, posicoes, quantObj, "chaves");
 
             getch();
-            Menu(jogo);
         }
     }
     else
@@ -2406,13 +2216,10 @@ void Ranking(JOGO *jogo)
 
                 system("cls");
                 DesenhaRanking(pontuacao, nome, posicoes, quantObj, "vidas");
-
-                Menu(jogo);
             }
             else
             {
                 system("cls");
-                Menu(jogo);
             }
         }
         else
@@ -2436,8 +2243,6 @@ void Ranking(JOGO *jogo)
             fclose(ranking);
 
             DesenhaRanking(pontuacao, nome, posicoes, quantObj, "vidas");
-
-            Menu(jogo);
         }
     }
 }
@@ -2514,7 +2319,6 @@ void MostraRanking(JOGO *jogo)
             printf("Sentimos muito por isso\n\n");
             printf("Pressione qualquer tecla para voltar ao menu\n");
             getch();
-            Menu(jogo);
             break;
         case 1:
             printf("\a");
@@ -2533,13 +2337,11 @@ void MostraRanking(JOGO *jogo)
 
                     fclose(ranking_d);
                     DesenhaRanking(relogio_d, nomes_d, posicoes_d, objeto_d, "vidas");
-                    Menu(jogo);
                 }
                 else
                 {
                     fclose(ranking_d);
                     system("cls");
-                    Menu(jogo);
                 }
             }
             else
@@ -2556,13 +2358,11 @@ void MostraRanking(JOGO *jogo)
                     fclose(ranking_f);
                     system("cls");
                     DesenhaRanking(relogio_f, nomes_f, posicoes_f, objeto_f, "chaves");
-                    Menu(jogo);
                 }
                 else
                 {
                     fclose(ranking_f);
                     system("cls");
-                    Menu(jogo);
                 }
             }
             break;
@@ -2579,7 +2379,6 @@ void MostraRanking(JOGO *jogo)
                 fclose(ranking_f);
                 system("cls");
                 DesenhaRanking(relogio_f, nomes_f, posicoes_f, objeto_f, "chaves");
-                Menu(jogo);
             }
             else
             {
@@ -2593,7 +2392,6 @@ void MostraRanking(JOGO *jogo)
                 fclose(ranking_d);
                 system("cls");
                 DesenhaRanking(relogio_d, nomes_d, posicoes_d, objeto_d, "vidas");
-                Menu(jogo);
             }
     }
 
@@ -2685,22 +2483,7 @@ void TrocaNomes (char nome1[], char nome2[])
     strcpy(nome2, nome);
 }
 
-/*
-
-Tive a ideia de fornecer ao jogador umas estatísticas sobre os seus jogos também, além do
-ranking.
-
-Acho que para isso precisaríamos criar um arquivo binário para armezenar todas as informações
-sobre qualquer jogo jogado.
-As estatísticas deveriam ser acessadas dentro do menu e, portanto, precisaria adaptar o menu
-a colocar um novo botão.
-Nas estatísticas poderíamos ter quantidade de jogos jogados pelo jogador, o tempo médio das
-partidas, a partida mais rápida e mais lenta, a quantidade total de chaves pegas, a quantidade
-média de chaves, a modalidade preferida e outras informações que possamos vir a pensar.
-
-*/
-
-void mostraEstatisticas (JOGO *jogo)
+void mostraEstatisticas (ESTATISTICAS estatisticas)
 {
     float mediaChaves;
     int percentual;
@@ -2709,7 +2492,7 @@ void mostraEstatisticas (JOGO *jogo)
 
     if (estatisticas.partidas_jogadas != 0)
     {
-        percentual = (estatisticas.vitorias * 100)/ estatisticas.partidas_jogadas;
+        percentual = (estatisticas.vitorias * 100) / estatisticas.partidas_jogadas;
         mediaChaves = estatisticas.chaves_pegas / (float) estatisticas.partidas_jogadas;
     }
     else
@@ -2758,18 +2541,7 @@ void mostraEstatisticas (JOGO *jogo)
     }
 
     getch();
-    Menu(jogo);
-
 }
-
-/*
-
-Também poderíamos colocar um botão no menu para alterar configurações básicas do jogo, como
-cor, nome do jogador e outras coisas, mas não sei qual seria a viabilidade de se fazer isso
-nesse ponto, uma vez que a gente usou as definições para colocar as cores, seria complexo de
-mudar as cores.
-
-*/
 
 void Configuracoes(JOGO *jogo)
 {
@@ -2793,21 +2565,14 @@ void Configuracoes(JOGO *jogo)
         case 1:
             system("cls");
             PegaNome(&jogo->jogador);
-            Menu(jogo);
             break;
         case 2:
-            MudaCores(jogo);
-            Menu(jogo);
+            MudaCores(&jogo->configuracoes);
             break;
         case 3:
             AlteraEfeitosGraficos(jogo);
             break;
-        case 4:
-            Menu(jogo);
-            break;
     }
-
-    getch();
 }
 
 void AlteraEfeitosGraficos(JOGO *jogo)
@@ -2820,29 +2585,25 @@ void AlteraEfeitosGraficos(JOGO *jogo)
 
     system("cls");
 
-    printf("\n\n  Status dos efeitos graficos: %s\n", (efeitosGraficos == 1 ? "Ligado":"Desligado"));
+    printf("\n\n  Status dos efeitos graficos: %s\n", (jogo->configuracoes.efeitosGraficos == 1 ? "Ligado":"Desligado"));
 
     quadro = CriaMenuPersonalizado(botoes, 5, 7, 2, 1, 2);
 
     if (quadro == 1)
     {
-        if (efeitosGraficos == 1)
+        if (jogo->configuracoes.efeitosGraficos == 1)
         {
-            efeitosGraficos = 0;
+            jogo->configuracoes.efeitosGraficos = 0;
         }
         else
         {
-            efeitosGraficos = 1;
+            jogo->configuracoes.efeitosGraficos = 1;
         }
         AlteraEfeitosGraficos(jogo);
     }
-    else
-    {
-        Menu(jogo);
-    }
 }
 
-void MudaCores(JOGO *jogo)
+void MudaCores(CONFIGURACOES *configuracoes)
 {
     char objetos[9][16], cores[18][16];
     int quadro1, quadro2;
@@ -2885,109 +2646,97 @@ void MudaCores(JOGO *jogo)
 
     system("cls");
 
-    if (quadro1 == 9)
+    if (quadro1 != 9)
     {
-        Menu(jogo);
+        printf("Selecione agora a cor que deseja para ele:");
+
+        quadro2 = CriaMenuPersonalizado(cores, 5, 5, 18, 6, 3);
+
+        system("cls");
+
+        switch(quadro2)
+        {
+            case 1:
+                corEscolhida = BLACK;
+                break;
+            case 2:
+                corEscolhida = BLUE;
+                break;
+            case 3:
+                corEscolhida = GREEN;
+                break;
+            case 4:
+                corEscolhida = CYAN;
+                break;
+            case 5:
+                corEscolhida = RED;
+                break;
+            case 6:
+                corEscolhida = MAGENTA;
+                break;
+            case 7:
+                corEscolhida = BROWN;
+                break;
+            case 8:
+                corEscolhida = LIGHTGRAY;
+                break;
+            case 9:
+                corEscolhida = DARKGRAY;
+                break;
+            case 10:
+                corEscolhida = LIGHTBLUE;
+                break;
+            case 11:
+                corEscolhida = LIGHTGREEN;
+                break;
+            case 12:
+                corEscolhida = LIGHTCYAN;
+                break;
+            case 13:
+                corEscolhida = LIGHTRED;
+                break;
+            case 14:
+                corEscolhida = LIGHTMAGENTA;
+                break;
+            case 15:
+                corEscolhida = YELLOW;
+                break;
+            case 16:
+                corEscolhida = WHITE;
+                break;
+            case 17:
+                MudaCores(configuracoes);
+                break;
+        }
+
+        switch(quadro1)
+        {
+            case 1:
+                configuracoes->cor_jogador = corEscolhida;
+                break;
+            case 2:
+                configuracoes->cor_moldura = corEscolhida;
+                break;
+            case 3:
+                configuracoes->cor_parede = corEscolhida;
+                break;
+            case 4:
+                configuracoes->cor_chave = corEscolhida;
+                break;
+            case 5:
+                configuracoes->cor_guardas = corEscolhida;
+                break;
+            case 6:
+                configuracoes->cor_torre = corEscolhida;
+                break;
+            case 7:
+                configuracoes->cor_ogro = corEscolhida;
+                break;
+            case 8:
+                configuracoes->cor_cenario = corEscolhida;
+                break;
+        }
     }
-
-    printf("Selecione agora a cor que deseja para ele:");
-
-    quadro2 = CriaMenuPersonalizado(cores, 5, 5, 18, 6, 3);
-
-    system("cls");
-
-    switch(quadro2)
-    {
-        case 1:
-            corEscolhida = BLACK;
-            break;
-        case 2:
-            corEscolhida = BLUE;
-            break;
-        case 3:
-            corEscolhida = GREEN;
-            break;
-        case 4:
-            corEscolhida = CYAN;
-            break;
-        case 5:
-            corEscolhida = RED;
-            break;
-        case 6:
-            corEscolhida = MAGENTA;
-            break;
-        case 7:
-            corEscolhida = BROWN;
-            break;
-        case 8:
-            corEscolhida = LIGHTGRAY;
-            break;
-        case 9:
-            corEscolhida = DARKGRAY;
-            break;
-        case 10:
-            corEscolhida = LIGHTBLUE;
-            break;
-        case 11:
-            corEscolhida = LIGHTGREEN;
-            break;
-        case 12:
-            corEscolhida = LIGHTCYAN;
-            break;
-        case 13:
-            corEscolhida = LIGHTRED;
-            break;
-        case 14:
-            corEscolhida = LIGHTMAGENTA;
-            break;
-        case 15:
-            corEscolhida = YELLOW;
-            break;
-        case 16:
-            corEscolhida = WHITE;
-            break;
-        case 17:
-            MudaCores(jogo);
-            break;
-        case 18:
-            Menu(jogo);
-            break;
-    }
-
-    switch(quadro1)
-    {
-        case 1:
-            cor_jogador = corEscolhida;
-            break;
-        case 2:
-            cor_moldura = corEscolhida;
-            break;
-        case 3:
-            cor_parede = corEscolhida;
-            break;
-        case 4:
-            cor_chave = corEscolhida;
-            break;
-        case 5:
-            cor_guardas = corEscolhida;
-            break;
-        case 6:
-            cor_torre = corEscolhida;
-            break;
-        case 7:
-            cor_ogro = corEscolhida;
-            break;
-        case 8:
-            cor_cenario = corEscolhida;
-            break;
-        case 9:
-            Menu(jogo);
-            break;
-    }
-
-    system("cls");
-
-    Menu(jogo);
 }
 
 int CriaMenuPersonalizado (char botoes[][16], int menorx, int menory, int quantidade_de_botoes, int quantidade_linhas, int quantidade_colunas)
@@ -3250,8 +2999,6 @@ void Sangue (JOGO jogo)
 
     for (int i = 0; i < 3; i++)
     {
-        ApagaElemento(jogo.jogador.posicao.x + acrescimo_x[i], jogo.jogador.posicao.y + acrescimo_y[i]);
+        ApagaElemento(jogo.jogador.posicao.x + acrescimo_x[i], jogo.jogador.posicao.y + acrescimo_y[i], jogo.configuracoes.cor_cenario);
     }
-
 }
-
