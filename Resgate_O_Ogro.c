@@ -1,4 +1,4 @@
-x/*Jogo Resgate o Ogro implementado por Lucas Cardoso dos Santos (Cartão UFRGS: 00304243) e Paulo Gamarra Lessa Pinto (Cartão UFRGS: 00305674) */
+/*Jogo Resgate o Ogro implementado por Lucas Cardoso dos Santos (Cartão UFRGS: 00304243) e Paulo Gamarra Lessa Pinto (Cartão UFRGS: 00305674) */
 
 //Endereço para a biblioteca conio no linker: C:\Program Files (x86)\CodeBlocks\MinGW\lib\libconio.a
 
@@ -318,22 +318,26 @@ int main()
 {
     JOGO jogo;
 
-    jogo.configuracoes.cor_jogador = BLUE;
-    jogo.configuracoes.cor_moldura = LIGHTGREEN;
-    jogo.configuracoes.cor_parede = LIGHTGRAY;
-    jogo.configuracoes.cor_chave = YELLOW;
-    jogo.configuracoes.cor_guardas = WHITE;
-    jogo.configuracoes.cor_torre = DARKGRAY;
-    jogo.configuracoes.cor_ogro = GREEN;
-    jogo.configuracoes.cor_cenario = BLACK;
-    jogo.configuracoes.efeitosGraficos = 1;
+    DefineConfiguracoesInicias(&jogo.configuracoes);
     jogo.nivel = 0;
 
     TelaInicial();
     PegaNome(&jogo.jogador);
     Menu(&jogo);
-
 	return(0);
+}
+
+void DefineConfiguracoesInicias (CONFIGURACOES *conf)
+{
+    conf->cor_jogador = BLUE;
+    conf->cor_moldura = LIGHTGREEN;
+    conf->cor_parede = LIGHTGRAY;
+    conf->cor_chave = YELLOW;
+    conf->cor_guardas = WHITE;
+    conf->cor_torre = DARKGRAY;
+    conf->cor_ogro = GREEN;
+    conf->cor_cenario = BLACK;
+    conf->efeitosGraficos = 1;
 }
 
 void TelaInicial() // ok
@@ -3002,5 +3006,3 @@ void Sangue (JOGO jogo)
         ApagaElemento(jogo.jogador.posicao.x + acrescimo_x[i], jogo.jogador.posicao.y + acrescimo_y[i], jogo.configuracoes.cor_cenario);
     }
 }
-
-asaushasuh
