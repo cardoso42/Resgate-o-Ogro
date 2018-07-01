@@ -1,4 +1,4 @@
-/*Jogo Resgate o Ogro implementado por Lucas Cardoso dos Santos (Cartão UFRGS: 00304243) e Paulo Gamarra Lessa Pinto (Cartão UFRGS: 00305674) */
+x/*Jogo Resgate o Ogro implementado por Lucas Cardoso dos Santos (Cartão UFRGS: 00304243) e Paulo Gamarra Lessa Pinto (Cartão UFRGS: 00305674) */
 
 //Endereço para a biblioteca conio no linker: C:\Program Files (x86)\CodeBlocks\MinGW\lib\libconio.a
 
@@ -3002,3 +3002,5 @@ void Sangue (JOGO jogo)
         ApagaElemento(jogo.jogador.posicao.x + acrescimo_x[i], jogo.jogador.posicao.y + acrescimo_y[i], jogo.configuracoes.cor_cenario);
     }
 }
+
+asaushasuh
